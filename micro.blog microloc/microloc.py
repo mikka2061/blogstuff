@@ -43,16 +43,16 @@ MAKE_DRAFT = True
 SEND_DRAFT = False
 
 # Set your key from micro.blog here (https://micro.blog/account/apps)
-MICROBLOG_KEY = '83A551D7AEDFF3B9D409'
+MICROBLOG_KEY = ''
 
 # Get a what3words API key (see README.md)
-W3W_API = 'YMTM96SR'
+W3W_API = ''
 
 # Want to also create a cool timeline of aerial views in Photos.app? Create an album and
 # set this to True and to the name of the Album. Totally cool. Also really useful if you
 # have a Day One diary and want to illustrate your daily diaries.
 SAVE_TO_ALBUM = True
-ALBUM_NAME = "Aerial Mikka"
+ALBUM_NAME = ""
 
 # NOT a big fan of this, but for iOS Beta it needs to be set
 requests.packages.urllib3.disable_warnings()
