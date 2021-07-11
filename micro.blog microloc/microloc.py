@@ -6,6 +6,8 @@ import photos
 import what3words
 import json                    
 import requests
+import os
+from urllib.parse import quote
 
 '''
 Mikka is <mikka@mikka.is> - more at https://mikka.is
@@ -31,19 +33,26 @@ Problems:
 # This one here is important. Set it to make the post a Draft, which you can then edit in the iOS or Mac app.
 # This allows you to snapshot your aerial view, save it to Photos (if desired), and then edit the text later,
 # adding pithy observations.
-MAKE_DRAFT = False
+MAKE_DRAFT = True
+
+# And this one is confusing :)
+# If you have installed or are using the Drafts app (https://getdrafts.com) you can opt
+# to not post the entry but have it sent to Drafts, so you can keep editing it. The image
+# will be uploaded, and then a new Draft in Drafts will be opened. Send this to micro.blog
+# with the according built in Drafts action (see https://actions.getdrafts.com/a/1Hg)
+SEND_DRAFT = False
 
 # Set your key from micro.blog here (https://micro.blog/account/apps)
-MICROBLOG_KEY = ''
+MICROBLOG_KEY = '83A551D7AEDFF3B9D409'
 
 # Get a what3words API key (see README.md)
-W3W_API = ''
+W3W_API = 'YMTM96SR'
 
 # Want to also create a cool timeline of aerial views in Photos.app? Create an album and
 # set this to True and to the name of the Album. Totally cool. Also really useful if you
 # have a Day One diary and want to illustrate your daily diaries.
-SAVE_TO_ALBUM = False
-ALBUM_NAME = ""
+SAVE_TO_ALBUM = True
+ALBUM_NAME = "Aerial Mikka"
 
 # NOT a big fan of this, but for iOS Beta it needs to be set
 requests.packages.urllib3.disable_warnings()
@@ -76,7 +85,8 @@ def make_img():
     map_type='hybrid')
 
   jpeg_data = img.to_jpeg()
-  filename = w3w["words"] + ".jpg"
+  filename = os.path.expanduser("~/Documents") + "/" + w3w["words"] + ".jpg"
+
   with open(filename, 'wb') as f:
     f.write(jpeg_data)
   return [filename, w3w["words"], loc]
@@ -108,6 +118,13 @@ def make_post(imgurl, w3words):
   mytext = "Aerial view of my current or recent location at <a href='https://w3w.co/{}'>w3w://{}</a>".format(w3words,w3words)
   header = {'Authorization': 'Bearer {}'.format(MICROBLOG_KEY)}
   data = {'h': 'entry', 'content': mytext, 'photo': imgurl}
+  if SEND_DRAFT:
+    import clipboard
+    import webbrowser
+    text = mytext + "\n" + "<img src='{}' alt='aerial view of {}'/>".format(imgurl, w3words)
+    webbrowser.open("drafts://x-callback-url/create?text={}".format(quote(text)))
+    return
+    
   if MAKE_DRAFT:
     data['post-status'] = 'draft'
 
@@ -119,7 +136,8 @@ def main():
   imgurl = post_image(image_file)
   if SAVE_TO_ALBUM:
     image_to_albums(image_file, w3words, loc)
-  make_post(imgurl, w3words)
+    make_post(imgurl, w3words)
+  os.remove(image_file)
   exit()
 
 if __name__ == '__main__':
