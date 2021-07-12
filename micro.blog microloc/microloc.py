@@ -119,7 +119,6 @@ def make_post(imgurl, w3words):
   header = {'Authorization': 'Bearer {}'.format(MICROBLOG_KEY)}
   data = {'h': 'entry', 'content': mytext, 'photo': imgurl}
   if SEND_DRAFT:
-    import clipboard
     import webbrowser
     text = mytext + "\n" + "<img src='{}' alt='aerial view of {}'/>".format(imgurl, w3words)
     webbrowser.open("drafts://x-callback-url/create?text={}".format(quote(text)))
